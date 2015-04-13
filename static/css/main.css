@@ -9,7 +9,9 @@
 	01. Common
 	02. Header
 	03. Footer
-		----------------------
+	04. Content
+	
+	----------------------
 
 	Terminal:
 	$ yui-compressor static/css/main.css -o static/css/main.min.css --charset utf-8
@@ -45,8 +47,8 @@ body {
 
 
 #wrapper {
-	width: 				700px;
-	margin: 			10px auto;
+	//width: 				700px;
+	//margin: 			10px auto;
 }
 
 .text-center {
@@ -77,8 +79,8 @@ h1, h2 {
  ** **************************************************************** **/
 
 header {
-	padding-top: 20px;
-	height: 100px;
+	padding-top: 			20px;
+	height: 			100px;
 }
 
 header h1 {
@@ -98,6 +100,57 @@ header h1 {
 
 footer {
 	min-height: 			200px;
+	background-color: 		#181818;
+}
+
+
+
+
+
+
+	
+/** **************************************************************** **
+	
+	04. Content 
+
+ ** **************************************************************** **/
+
+section { 
+	padding: 			100px;
+}
+
+section p {
+	text-align:  			justify;
+}
+
+section h2 {
+	color: 				#252525;
+	font-size: 			1.6em;
+	font-weight: 			100;
+}
+
+section#section1 {
+	background: 			#89BEBE;
+}
+
+section#section2 {
+	background: 			#EAEAEA;
+}
+
+section#section3 {
+	background: 			#59729D;
+}
+
+section#section4 {
+	background: 			#EAEAEA;
+}
+
+section#section5 {
+	background: 			#9D595C;
+}
+
+section#section6 {
+	background: 			#EAEAEA;
 }
 
 
