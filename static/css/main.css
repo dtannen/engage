@@ -1,0 +1,108 @@
+/** **************************************************************** ** 
+	
+	@Author:    Rapić Milan
+	@Project:   Engage tool
+	
+	
+	Table contents
+	----------------------
+	01. Common
+	02. Header
+	03. Footer
+		----------------------
+
+	Terminal:
+	$ yui-compressor static/css/main.css -o static/css/main.min.css --charset utf-8
+
+ ** **************************************************************** **/
+
+
+
+
+
+/** **************************************************************** **
+	
+	01. Common 
+
+ ** **************************************************************** **/
+
+html {
+	overflow-x:			hidden;
+	overflow-y:			auto;
+}
+
+html, 
+body {
+	min-height:			100%;
+}
+
+body {
+	background:			#ffffff;
+	font-family:			'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-weight:			300;
+	font-size: 			0.9em;
+}
+
+
+#wrapper {
+	width: 				700px;
+	margin: 			10px auto;
+}
+
+.text-center {
+	text-align: 			center;
+}
+
+.show {
+	display: 			block !important;
+}
+
+.hide {
+	display: 			none !important;
+}
+
+h1, h2 {
+	font-weight: 			100;
+	color: 				#3D3D3D;
+}
+
+
+
+
+
+/** **************************************************************** **
+	
+	02. Header 
+
+ ** **************************************************************** **/
+
+header {
+	padding-top: 20px;
+	height: 100px;
+}
+
+header h1 {
+	text-align: 			center;
+}
+
+
+
+
+
+	
+/** **************************************************************** **
+	
+	03. Footer 
+
+ ** **************************************************************** **/
+
+footer {
+	min-height: 			200px;
+}
+
+
+
+
+
+
+/** **************************************************************** **/

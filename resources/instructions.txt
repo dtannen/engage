@@ -1,0 +1,51 @@
+Build a server to capture scroll depth, scroll velocity (pixels/s) and time on page.
+
+Object per impression should be:
+
+{
+	“account_id”: “xyz”,
+	“campaign_id”: “xyz”,
+	“creative_id”: “abc”,
+	“impression_id”: “123abc”,
+	“data”: {
+		“scroll_depth”: %
+		“scroll_velocity”: px/s
+		“time_on_page”: seconds
+	}
+}
+
+Object for account:
+
+{
+	“id”:”xyz”,
+	“username”:”xxx”,
+	“password”:”hashed_password”,
+	“endpoint”:”anotherserver.com/endpoint”,
+	“daily_limit”:”1000”,	
+}
+
+Javascript to capture scroll depth:
+
+http://scrolldepth.parsnip.io/
+
+Strategy for server-side capture:
+
+a) Open web socket and pass updated stats every 5 second and update server-side object.  Once socket is broken store to DB.  
+   If impression_id was already passed then ignore.  Pass to endpoint for account if exists.
+b) Capture and store stats on client-side until user leaves the page and pass stats to the server.
+
+Server must have quotas & rate limiting per account
+
+API must be available to pull data for each impression or aggregate by creative, campaign or account.
+
+Consider using tyk as a gateway to service: 
+https://tyk.io/ to get all the authentication, rate limiting, admin interface, etc. out of the box.
+
+API must have the ability to specify an endpoint for an account to send completed JSON.  
+i.e. A person visits a page with the javascript for tracking and after they leave a page a server-side call is made to anotherserver.com/endpoint with the JSON containing the stats
+
+Also, the account_id, campaign_id, creative_id and impression_id should be captured from url:  taid=XX&tcid=XX&tcrid=XX&tid=XX 
+or account_id can be hardcoded in the page javascript and the rest passed through the URL.
+
+[consider also using utm parameters used in google analytics]
+If impression id is null then we aggregate hourly stats by account/campaign/creative and delete all the individual data.
