@@ -62,10 +62,13 @@ $(function(){
           _data.scroll_velocity = NaN
         }
 
-        console.log(_data)
-        console.log("Scroll velocity formula:  velocity = pixelDepth / timeOnPage | " + _data.scroll_velocity + " = " + _pixelDepth + " / " + _data.time_on_page)
 
-        console.log("----------------------------------------------------------------------------------");
+        sendMessage(data);
+
+        //console.log(_data)
+        //console.log("Scroll velocity formula:  velocity = pixelDepth / timeOnPage | " + _data.scroll_velocity + " = " + _pixelDepth + " / " + _data.time_on_page)
+
+        //console.log("----------------------------------------------------------------------------------");
 
         _data.scroll_depth = "";
         _data.scroll_velocity = "";
@@ -117,5 +120,34 @@ $(function(){
       return timeOnPage;
     }
   }
+
+
+
+
+
+  // Web socket
+
+  var sock = null;
+  var wsuri = "ws://127.0.0.1:8000/api/data";
+
+
+  sock = new WebSocket(wsuri);
+
+  sock.onopen = function() {
+    console.log("connected to " + wsuri);
+  }
+
+  sock.onclose = function(e) {
+    console.log("connection closed (" + e.code + ")");
+  }
+
+  sock.onmessage = function(e) {
+    console.log("message received: " + e.data);
+  }
+  
+
+  function sendMessage(msg) {
+    sock.send(msg);
+  };
 
 });
