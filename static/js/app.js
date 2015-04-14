@@ -63,7 +63,7 @@ $(function(){
         }
 
 
-        sendMessage(data);
+        sendMessage(_data);
 
         //console.log(_data)
         //console.log("Scroll velocity formula:  velocity = pixelDepth / timeOnPage | " + _data.scroll_velocity + " = " + _pixelDepth + " / " + _data.time_on_page)
@@ -103,21 +103,21 @@ $(function(){
     if ((data.event == "ScrollDistance") && (data.eventAction == "Percentage")) {
       var pixelDepth = data.eventLabel;
 
-      return pixelDepth;
+      return pixelDepth.toString();
     }
   }
 
   function getPixelVelocity(pixelDepth, timing) {
       var pixelVelocity = pixelDepth / timing;
 
-      return parseFloat(pixelVelocity.toFixed(2));
+      return parseFloat(pixelVelocity.toFixed(2)).toString();
   }
 
   function getTimeOnPage(data) {
     if (data.event == "ScrollTiming") {
       var timeOnPage = data.eventTiming * 0.001
 
-      return timeOnPage;
+      return timeOnPage.toString();
     }
   }
 
@@ -147,7 +147,7 @@ $(function(){
   
 
   function sendMessage(msg) {
-    sock.send(msg);
+    sock.send(JSON.stringify(msg));
   };
 
 });

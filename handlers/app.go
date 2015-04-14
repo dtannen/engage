@@ -2,7 +2,9 @@ package handlers
 
 import (
 	//"github.com/zenazn/goji/web"
+	//"encoding/json"
 	"fmt"
+	"github.com/dtannen/engage/repository"
 	"golang.org/x/net/websocket"
 	"html/template"
 	"log"
@@ -28,24 +30,37 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func WSHandler(ws *websocket.Conn) {
+
+	// Append ScrollDepth object to list and save it to database on websocket connection close
+
+	//dataList := []repository.ScrollDepth{}
+
 	for {
-		var reply string
+		//var reply string
+		d := repository.ScrollDepth{}
+		//var buff []byte
 
-		err := websocket.Message.Receive(ws, &reply)
+		err := websocket.JSON.Receive(ws, &d)
 		if err != nil {
-			fmt.Println("Can't receive")
+			fmt.Println("Can't receive: " + err.Error())
 			break
 		}
 
-		fmt.Println("Received back from client: " + reply)
+		fmt.Println("Received data:")
+		fmt.Println("Scroll depth: " + d.ScrollDepth)
+		fmt.Println("Scroll velocity: " + d.ScrollVelocity)
+		fmt.Println("Time on page: " + d.TimeOnPage)
+		fmt.Println("---------------------------------")
 
-		msg := "Received:  " + reply
-		fmt.Println("Sending to client: " + msg)
+		/*
+			msg := "Received:  " + reply
+			fmt.Println("Sending to client: " + msg)
 
-		err = websocket.Message.Send(ws, msg)
-		if err != nil {
-			fmt.Println("Can't send")
-			break
-		}
+			err = websocket.Message.Send(ws, msg)
+			if err != nil {
+				fmt.Println("Can't send")
+				break
+			}
+		*/
 	}
 }
