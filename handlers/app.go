@@ -31,20 +31,18 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 func WSHandler(ws *websocket.Conn) {
 
-	// Append ScrollDepth object to list and save it to database on websocket connection close
-
 	//dataList := []repository.ScrollDepth{}
 
 	for {
-		//var reply string
 		d := repository.ScrollDepth{}
-		//var buff []byte
 
 		err := websocket.JSON.Receive(ws, &d)
 		if err != nil {
 			fmt.Println("Can't receive: " + err.Error())
 			break
 		}
+
+		// TODO: Append ScrollDepth object to dataList and save it to database on websocket connection close
 
 		fmt.Println("Received data:")
 		fmt.Println("Scroll depth: " + d.ScrollDepth)
@@ -63,4 +61,7 @@ func WSHandler(ws *websocket.Conn) {
 			}
 		*/
 	}
+
+	fmt.Println("Connection is closed.")
+	// TODO: Save data to database
 }

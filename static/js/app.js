@@ -1,153 +1,111 @@
 $(function(){
 
+	// Start timer
+	var startTime = new Date;
 
-  var _gaq = {};
+	var data = {
+    	scroll_depth: "",
+    	scroll_velocity: "",
+    	time_on_page: ""
+	}
 
-  var _data = {
-    scroll_depth: "",
-    scroll_velocity: "",
-    time_on_page: ""
-  }
+	/*
+     * Throttle function borrowed from:
+     * Underscore.js 1.5.2
+     * http://underscorejs.org
+     * (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+     * Underscore may be freely distributed under the MIT license.
+     */
 
-  _gaq.push = function(data) {
-    console.log("_gaq.push(" + JSON.stringify(data) + ");");
-  };
+    function throttle(func, wait) {
+      var context, args, result;
+      var timeout = null;
+      var previous = 0;
+      var later = function() {
+        previous = new Date;
+        timeout = null;
+        result = func.apply(context, args);
+      };
+      return function() {
+        var now = new Date;
+        if (!previous) previous = now;
+        var remaining = wait - (now - previous);
+        context = this;
+        args = arguments;
+        if (remaining <= 0) {
+          clearTimeout(timeout);
+          timeout = null;
+          previous = now;
+          result = func.apply(context, args);
+        } else if (!timeout) {
+          timeout = setTimeout(later, remaining);
+        }
+        return result;
+      };
+    }
 
-  var dataLayer = {};
-  dataLayer.push = function(data) {
-    console.log("dataLayer.push(" + JSON.stringify(data) + ");");
-  };
+    // Scroll Event
+    $(window).on('scroll', throttle(function() {
 
-  var ga = function(params) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    console.log("ga(" + args.join(',') + ");");
-  };
+    	var scrollStartTime = new Date;
 
-  _gaq = undefined;
-  dataLayer = undefined;
-  ga = undefined;
-  $.scrollDepth({
-    elements: ['#section1', '#section2', '#section3', '#section4', '#section5', '#section6', 'footer'],
-    userTiming: true,
-    eventHandler: function(data) {
-      /*
-      console.log("Event: " + data.event);
-      console.log("Event action: " + data.eventAction);
-      console.log("Event category: " + data.eventCategory);
-      console.log("Event label: " + data.eventLabel);
-      console.log("Event value: " + data.eventValue);
-      console.log("Event timing: " + data.eventTiming);
-      */
+    	var docHeight = $(document).height();
+    	
+    	//var winHeight = window.innerHeight ? window.innerHeight : $(window).height();
+    	//var scrollDistance = $(window).scrollTop() + winHeight;
+    	
+    	var scrollDistance = $(window).scrollTop();
 
-      
-      tmpScrollDepthPercentage = getPixelDepthPercentage(data);
-      if (tmpScrollDepthPercentage != undefined) {
-        _data.scroll_depth = tmpScrollDepthPercentage;
-      }
+    	var timing = Math.floor((new Date - startTime) * 0.001);
+    	var timingSeconds = timing.toString() + "s";
 
-      scrollDepth = getPixelDepth(data);
+    	var percentage = Math.floor((scrollDistance / docHeight) * 100);
+        var percetageString = percentage.toString() + "%";
 
-      tmpTimeOnPage = getTimeOnPage(data);
-      if (tmpTimeOnPage != undefined) {
-        _data.time_on_page = tmpTimeOnPage;
-      }
-
-     
-      if (((scrollDepth != undefined) && (_data.scroll_depth != "")) && (_data.time_on_page != undefined)) {
-        var _pixelDepth = parseInt(scrollDepth);
         
-        _data.scroll_velocity = getPixelVelocity(_pixelDepth, _data.time_on_page)
+        console.log("Percentage: " + percetageString)
+        console.log("docHeight: " + docHeight.toString() + "px")
+        console.log("scrollDistance: " + scrollDistance.toString() + "px");
+        console.log("timing: "+ timingSeconds);
+        console.log("Scroll Velocity: " + scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001))
+        console.log("----------------------------------------")
 
-        if (_data.scroll_velocity == "Infinity") {
-          _data.scroll_velocity = NaN
-        }
+        data.scroll_depth = percetageString;
+        data.scroll_velocity = scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001);
+        data.time_on_page = timingSeconds;
 
-
-        sendMessage(_data);
-
-        //console.log(_data)
-        //console.log("Scroll velocity formula:  velocity = pixelDepth / timeOnPage | " + _data.scroll_velocity + " = " + _pixelDepth + " / " + _data.time_on_page)
-
-        //console.log("----------------------------------------------------------------------------------");
-
-        _data.scroll_depth = "";
-        _data.scroll_velocity = "";
-        _data.time_on_page = "";
-      }
-      
-      //console.log(_data)
-
-      /*
-        “data”: {
-          “scroll_depth”: %
-          “scroll_velocity”: px/s
-          “time_on_page”: seconds
-        }
-      */
+        // Send data to server
+        sendMessage(data);
 
 
 
-      //console.log(data);
-    }
-  });
-
-  function getPixelDepth(data) {
-    if ((data.event == "ScrollDistance") && (data.eventAction == "Pixel Depth")) {
-      var pixelDepth = data.eventLabel;
-
-      return pixelDepth;
-    }
-  }
-
-  function getPixelDepthPercentage(data) {
-    if ((data.event == "ScrollDistance") && (data.eventAction == "Percentage")) {
-      var pixelDepth = data.eventLabel;
-
-      return pixelDepth.toString();
-    }
-  }
-
-  function getPixelVelocity(pixelDepth, timing) {
-      var pixelVelocity = pixelDepth / timing;
-
-      return parseFloat(pixelVelocity.toFixed(2)).toString();
-  }
-
-  function getTimeOnPage(data) {
-    if (data.event == "ScrollTiming") {
-      var timeOnPage = data.eventTiming * 0.001
-
-      return timeOnPage.toString();
-    }
-  }
+    }, 500));
 
 
+    // Web socket
+
+	var sock = null;
+	var wsuri = "ws://127.0.0.1:8000/api/data";
 
 
+	sock = new WebSocket(wsuri);
 
-  // Web socket
+	sock.onopen = function() {
+		console.log("connected to " + wsuri);
+	}
 
-  var sock = null;
-  var wsuri = "ws://127.0.0.1:8000/api/data";
+	sock.onclose = function(e) {
+		console.log("connection closed (" + e.code + ")");
+	}
 
-
-  sock = new WebSocket(wsuri);
-
-  sock.onopen = function() {
-    console.log("connected to " + wsuri);
-  }
-
-  sock.onclose = function(e) {
-    console.log("connection closed (" + e.code + ")");
-  }
-
-  sock.onmessage = function(e) {
-    console.log("message received: " + e.data);
-  }
+	sock.onmessage = function(e) {
+		console.log("message received: " + e.data);
+	}
   
 
-  function sendMessage(msg) {
-    sock.send(JSON.stringify(msg));
-  };
+	function sendMessage(msg) {
+		sock.send(JSON.stringify(msg));
+	};
+
 
 });
