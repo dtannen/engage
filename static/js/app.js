@@ -1,13 +1,111 @@
 $(function(){
 
 	// Start timer
-	var startTime = new Date;
+    var started = false;
+    var stopped = false;
+    var clockTime = 0;
+    var startTime = new Date();
+    var clockTimer = null;
+    var idleTimer = null;
+    var reportInterval = 5;
+    var idleTimeout = 30;
 
 	var data = {
     	scroll_depth: "",
     	scroll_velocity: "",
     	time_on_page: ""
 	}
+
+
+    // Basic activity event listeners
+    addListener(document, 'keydown', trigger);
+    addListener(document, 'click', trigger);
+    addListener(window, 'mousemove', throttle(trigger, 500));
+    addListener(window, 'scroll', throttle(trigger, 500));
+
+    // Page visibility listeners
+    addListener(document, 'visibilitychange', visibilityChange);
+    addListener(document, 'webkitvisibilitychange', visibilityChange);
+    
+
+    /*
+     * Cross-browser event listening
+     */
+
+    function addListener(element, eventName, handler) {
+      if (element.addEventListener) {
+        element.addEventListener(eventName, handler, false);
+      }
+      else if (element.attachEvent) {
+        element.attachEvent('on' + eventName, handler);
+      }
+      else {
+        element['on' + eventName] = handler;
+      }
+    }
+
+    function setIdle() {
+      clearTimeout(idleTimer);
+      stopClock();
+    }
+
+    function visibilityChange() {
+      if (document.hidden || document.webkitHidden) {
+        setIdle();
+      }
+    }
+
+    function clock() {
+      clockTime += 1;
+      if (clockTime > 0 && (clockTime % reportInterval === 0)) {
+        // Set timeOnPage here if want to count intervals of 5 seconds
+        // window.timeOnPage = clockTime;
+      }
+      window.timeOnPage = clockTime;
+    }
+
+    function stopClock() {
+      stopped = true;
+      clearTimeout(clockTimer);
+    }
+
+
+    function restartClock() {
+      stopped = false;
+      clearTimeout(clockTimer);
+      clockTimer = setInterval(clock, 1000);
+    }
+
+    function startTimer() {
+
+      // Calculate seconds from start to first interaction
+      var currentTime = new Date();
+      var diff = currentTime - startTime;
+
+      // Set global
+      started = true;
+
+      // Start clock
+      clockTimer = setInterval(clock, 1000);
+
+    }
+
+    function trigger() {
+
+      if (!started) {
+        startTimer();
+      }
+
+      if (stopped) {
+        restartClock();
+      }
+
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(setIdle, idleTimeout * 1000 + 100);
+    }
+
+
+    startTimer();
 
 	/*
      * Throttle function borrowed from:
@@ -47,7 +145,7 @@ $(function(){
     // Scroll Event
     $(window).on('scroll', throttle(function() {
 
-    	var scrollStartTime = new Date;
+    	//var scrollStartTime = new Date;
 
     	var docHeight = $(document).height();
     	
@@ -56,41 +154,31 @@ $(function(){
     	
     	var scrollDistance = $(window).scrollTop();
 
-    	var timing = Math.floor((new Date - startTime) * 0.001);
-    	var timingSeconds = timing.toString() + "s";
+    	//var timing = Math.floor((new Date - startTime) * 0.001);
+    	//var timingSeconds = timing.toString() + "s";
 
     	var percentage = Math.floor((scrollDistance / docHeight) * 100);
         var percetageString = percentage.toString() + "%";
 
-        //window.velocity = 0;
         var d1 = scrollDistance;
         
         setInterval(function(){ 
             var d2 = $(window).scrollTop();
             window.velocity = d2 - d1;
-            //console.log("V:  " + velocity)
-
         }, 1000);
 
-        
-        console.log("Percentage: " + percetageString)
-        console.log("docHeight: " + docHeight.toString() + "px")
-        console.log("scrollDistance: " + scrollDistance.toString() + "px");
-        console.log("timing: "+ timingSeconds);
-        //console.log("Scroll Velocity: " + scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001))
-        console.log("Velocity: " + window.velocity)
-        console.log("----------------------------------------")
 
-        
-        //data.scroll_velocity = scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001);
-        
         if (window.velocity == undefined) {
             window.velocity = 0;
         }
 
+        if (window.timeOnPage == undefined) {
+            window.timeOnPage = 0;
+        }
+
         data.scroll_depth = percetageString;
         data.scroll_velocity = window.velocity.toString() + "px/s";
-        data.time_on_page = timingSeconds;
+        data.time_on_page = window.timeOnPage.toString() + "s";
 
         // Send data to server
         sendMessage(data);
@@ -124,6 +212,7 @@ $(function(){
 	function sendMessage(msg) {
 		sock.send(JSON.stringify(msg));
 	};
+
 
 
 });
