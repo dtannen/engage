@@ -62,16 +62,34 @@ $(function(){
     	var percentage = Math.floor((scrollDistance / docHeight) * 100);
         var percetageString = percentage.toString() + "%";
 
+        //window.velocity = 0;
+        var d1 = scrollDistance;
+        
+        setInterval(function(){ 
+            var d2 = $(window).scrollTop();
+            window.velocity = d2 - d1;
+            //console.log("V:  " + velocity)
+
+        }, 1000);
+
         
         console.log("Percentage: " + percetageString)
         console.log("docHeight: " + docHeight.toString() + "px")
         console.log("scrollDistance: " + scrollDistance.toString() + "px");
         console.log("timing: "+ timingSeconds);
-        console.log("Scroll Velocity: " + scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001))
+        //console.log("Scroll Velocity: " + scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001))
+        console.log("Velocity: " + window.velocity)
         console.log("----------------------------------------")
 
+        
+        //data.scroll_velocity = scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001);
+        
+        if (window.velocity == undefined) {
+            window.velocity = 0;
+        }
+
         data.scroll_depth = percetageString;
-        data.scroll_velocity = scrollDistance / Math.floor((new Date - scrollStartTime) * 0.001);
+        data.scroll_velocity = window.velocity.toString() + "px/s";
         data.time_on_page = timingSeconds;
 
         // Send data to server
