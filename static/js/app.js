@@ -13,7 +13,8 @@ $(function(){
 	var data = {
     	scroll_depth: "",
     	scroll_velocity: "",
-    	time_on_page: ""
+    	time_on_page: "",
+      dwell_time:""
 	}
 
 
@@ -58,10 +59,10 @@ $(function(){
     function clock() {
       clockTime += 1;
       if (clockTime > 0 && (clockTime % reportInterval === 0)) {
-        // Set timeOnPage here if want to count intervals of 5 seconds
-        // window.timeOnPage = clockTime;
+        // Set dwellTime here if want to count intervals of 5 seconds
+        // window.dwellTime = clockTime;
       }
-      window.timeOnPage = clockTime;
+      window.dwellTime = clockTime;
     }
 
     function stopClock() {
@@ -172,13 +173,13 @@ $(function(){
             window.velocity = 0;
         }
 
-        if (window.timeOnPage == undefined) {
-            window.timeOnPage = 0;
+        if (window.dwellTime == undefined) {
+            window.dwellTime = 0;
         }
 
         data.scroll_depth = percetageString;
         data.scroll_velocity = window.velocity.toString() + "px/s";
-        data.time_on_page = window.timeOnPage.toString() + "s";
+        data.dwell_time = window.dwellTime.toString() + "s";
 
         // Send data to server
         sendMessage(data);
