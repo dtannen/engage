@@ -15,6 +15,7 @@ func main() {
 func setupRouting() {
 	goji.Get("/", handlers.AppHandler)
 	goji.Handle("/api/data", websocket.Handler(handlers.WSHandler))
+	goji.Handle("/api/get", handlers.GetData)
 
 	// Static file serving
 	goji.Get("/static/*", http.StripPrefix("/static", http.FileServer(http.Dir("static"))))

@@ -11,10 +11,10 @@ $(function(){
     var idleTimeout = 30;
 
 	var data = {
-    	scroll_depth: "",
-    	scroll_velocity: "",
-    	time_on_page: "",
-      dwell_time:""
+    	scroll_depth: 0,
+    	scroll_velocity: 0,
+    	time_on_page: 0,
+      dwell_time: 0
 	}
 
 
@@ -159,30 +159,34 @@ $(function(){
     	//var timingSeconds = timing.toString() + "s";
 
     	var percentage = Math.floor((scrollDistance / docHeight) * 100);
-        var percetageString = percentage.toString() + "%";
+      var percetageString = percentage.toString();
 
-        var d1 = scrollDistance;
+      var d1 = scrollDistance;
         
-        setInterval(function(){ 
-            var d2 = $(window).scrollTop();
-            window.velocity = d2 - d1;
-        }, 1000);
+      setInterval(function(){ 
+        var d2 = $(window).scrollTop();
+        window.velocity = Math.abs(d2 - d1);
+      }, 1000);
 
 
-        if (window.velocity == undefined) {
-            window.velocity = 0;
-        }
+      if (window.velocity == undefined) {
+        window.velocity = 0;
+      }
 
-        if (window.dwellTime == undefined) {
-            window.dwellTime = 0;
-        }
+      if (window.dwellTime == undefined) {
+        window.dwellTime = 0;
+      }
 
-        data.scroll_depth = percetageString;
-        data.scroll_velocity = window.velocity.toString() + "px/s";
-        data.dwell_time = window.dwellTime.toString() + "s";
+      data.scroll_depth = percentage;
+      data.scroll_velocity = window.velocity;
+      data.dwell_time = window.dwellTime;
 
-        // Send data to server
-        sendMessage(data);
+      console.log("data.scroll_depth = " + percentage);
+      console.log("data.scroll_velocity = " + window.velocity);
+      console.log("data.dwell_time = " + window.dwellTime);
+
+      // Send data to server
+      sendMessage(data);
 
 
 
@@ -212,6 +216,7 @@ $(function(){
 
 	function sendMessage(msg) {
 		sock.send(JSON.stringify(msg));
+    console.log(JSON.stringify(msg))
 	};
 
 
