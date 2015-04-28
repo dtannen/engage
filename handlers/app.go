@@ -84,7 +84,7 @@ func WSHandler(ws *websocket.Conn) {
 	report := repository.ScrollDepthReport{}
 
 	maxScrollDepth := 0
-	averageScrollvelocity := 0
+	averageScrollvelocity := 1
 	totalScrollvelocity := 0
 	counter := 1
 	maxDwellTime := 0
@@ -97,6 +97,7 @@ func WSHandler(ws *websocket.Conn) {
 		if v.Data.DwellTime > maxDwellTime {
 			maxDwellTime = v.Data.DwellTime
 		}
+
 		counter += 1
 		totalScrollvelocity += v.Data.ScrollVelocity
 	}

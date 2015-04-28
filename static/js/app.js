@@ -148,16 +148,31 @@ $(function(){
 
     	//var scrollStartTime = new Date;
 
+    	
+    	
+    	var winHeight = window.innerHeight ? window.innerHeight : $(window).height();
+    	var scrollDistance = $(window).scrollTop() + winHeight;
+
+      //var winHeight = window.innerHeight ? window.innerHeight : $(window).height();
+      //var scrollDistance2 = $(window).scrollTop() + winHeight;
+      //console.log("Scroll distance 2: " + scrollDistance2)
+      //var percentage2 = Math.floor((scrollDistance2 / docHeight) * 100);
+      //console.log("Percetage 2: " + percentage2)
+      /*
     	var docHeight = $(document).height();
-    	
-    	//var winHeight = window.innerHeight ? window.innerHeight : $(window).height();
-    	//var scrollDistance = $(window).scrollTop() + winHeight;
-    	
-    	var scrollDistance = $(window).scrollTop();
+    	var scrollDistance = $(document).scrollTop();
+      var scrollDistance2 = $(window).scrollTop();
+      */
+      /*
+      console.log("Document Scroll distance : " + scrollDistance)
+      console.log("Window Scroll distance : " + scrollDistance2)
+      console.log("docHeight : " + docHeight)
+      console.log("Inner height: " + $(document).innerHeight())
+      console.log("PageYOffset: " + window.pageYOffset)
+      console.log("Scroll distance 3 : " + scrollDistance3)
+      */
 
-    	//var timing = Math.floor((new Date - startTime) * 0.001);
-    	//var timingSeconds = timing.toString() + "s";
-
+      var docHeight = $(document).height();
     	var percentage = Math.floor((scrollDistance / docHeight) * 100);
       var percetageString = percentage.toString();
 
@@ -178,12 +193,14 @@ $(function(){
       }
 
       data.scroll_depth = percentage;
-      data.scroll_velocity = window.velocity;
+      data.scroll_velocity = Math.floor(window.velocity);
       data.dwell_time = window.dwellTime;
 
+      console.log("--------------------------------------------------------");
       console.log("data.scroll_depth = " + percentage);
-      console.log("data.scroll_velocity = " + window.velocity);
+      console.log("data.scroll_velocity = " + Math.floor(window.velocity));
       console.log("data.dwell_time = " + window.dwellTime);
+      console.log("--------------------------------------------------------");
 
       // Send data to server
       sendMessage(data);
